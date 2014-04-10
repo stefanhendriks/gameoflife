@@ -1,12 +1,76 @@
 describe "GameOfLife" do
   describe "generation" do
     let(:generation) { Generation.new(cells) }
-    subject { generation.next }
 
-    context "given an empty generation" do
-      let(:cells) { [] }
-      it { should eq([]) }
+    describe "#next" do
+      subject { generation.next }
+
+      context "given an empty generation" do
+        let(:cells) { [] }
+        it { should eq([]) }
+      end
+
+      context "given a generation of one cell" do
+        let(:cells) { [[0, 0]] }
+        it { should eq ([]) }
+      end
+
+      context "given a generation of a cell with one adjecent cell" do
+        let(:cells) { [[0, 0], [0, 1]] }
+        it { should eq ([]) }
+      end
+
+      context "given a generation of a cell with with two adjectent cells" do
+        let(:cells) { [[0, 0], [0, 1], [1, 0]] }
+        it { should eq ([[0, 0]]) }
+      end
     end
+
+    describe "#neighbour_count(pos)" do
+      subject { generation.neighbour_count(pos) }
+
+      context "given an empty generation" do
+        let(:pos) { [0,0] }
+        let(:cells) { [] }
+        it { should eq(0) }
+      end
+
+      context "given a generation with one" do
+        let(:cells) { [ [1,1] ] }
+
+        context "using a non adjecent position" do
+          let(:pos) { [10,10] }
+          it { should eq(0) }
+        end
+
+        context "using the same position as cell" do
+          let(:pos) { [1,1] }
+          it { should eq(0) }
+        end
+
+        context "using a position above cell" do
+          let(:pos) { [1,0] }
+          it { should eq(1) }
+        end
+      end
+
+      describe "a position" do
+        let(:pos) { [1, 1] }
+
+        context "surrounded by cells" do
+          let(:cells) do
+            [
+              [0, 0], [1, 0], [2, 0],
+              [0, 1],         [2, 1],
+              [0, 2], [1, 2], [2, 2]
+            ]
+          end
+          it { should eq(8) }
+        end
+
+      end
+    end
+
   end
 
   describe "Cell evolve" do
@@ -77,11 +141,28 @@ describe "GameOfLife" do
 
   class Generation
     def initialize(cells)
-
+      @cells = cells
     end
 
     def next
       []
+    end
+
+    def neighbour_count(pos)
+      pos_x, pos_y = *pos
+      neighbours = 0
+      @cells.each do |x, y|
+        neighbours += 1 if neighbours?(pos_x, pos_y, x, y)
+      end
+      neighbours
+    end
+
+    def neighbours?(pos_x, pos_y, x, y)
+      distance(pos_x, x) == 1 || distance(pos_y, y) == 1
+    end
+
+    def distance(pos_x, x)
+      (pos_x - x).abs
     end
   end
 end
