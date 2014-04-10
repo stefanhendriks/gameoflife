@@ -22,7 +22,18 @@ describe "GameOfLife" do
 
       context "given a generation of a cell with with two adjectent cells" do
         let(:cells) { [[0, 0], [0, 1], [1, 0]] }
-        it { should eq ([[0, 0]]) }
+        it { should eq ([[0, 0], [0, 1], [1, 0]]) }
+      end
+
+      context "given a generation of a cell with with four adjectent cells" do
+        let(:cells) do
+          [[1, 1], [2, 1], [3, 1],
+           [1, 2], [2, 2]]
+        end
+
+        it { should eq ([
+          [1, 1], [3, 1], [1, 2]
+        ]) }
       end
     end
 
@@ -140,29 +151,43 @@ describe "GameOfLife" do
   end
 
   class Generation
-    def initialize(cells)
-      @cells = cells
+    def initialize(alive_cells)
+      @cells = alive_cells
     end
 
     def next
-      []
+      next_gen = []
+      @cells.map do |cell|
+        count = neighbour_count(cell)
+        #p "#{cell} has #{count} neighbours"
+        next_gen << cell if Cell.evolve(true, count)
+      end
+      next_gen
     end
 
     def neighbour_count(pos)
       pos_x, pos_y = *pos
       neighbours = 0
       @cells.each do |x, y|
-        neighbours += 1 if neighbours?(pos_x, pos_y, x, y)
+        if neighbours?(pos_x, pos_y, x, y)
+          #p "#{pos} is neighbours with #{x},#{y}"
+          neighbours += 1
+        end
       end
       neighbours
     end
 
     def neighbours?(pos_x, pos_y, x, y)
-      distance(pos_x, x) == 1 || distance(pos_y, y) == 1
+      dist_x = distance(pos_x, x).abs
+      dist_y = distance(pos_y, y).abs
+      return true if (dist_x == 1 && dist_y == 0)
+      return true if (dist_x == 0 && dist_y == 1)
+      return true if (dist_x == 1 && dist_y == 1)
+      false
     end
 
     def distance(pos_x, x)
-      (pos_x - x).abs
+      (pos_x - x)
     end
   end
 end
