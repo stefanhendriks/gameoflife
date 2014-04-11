@@ -35,6 +35,18 @@ describe "GameOfLife" do
           [1, 1], [3, 1], [1, 2]
         ]) }
       end
+
+      context "dead cell revives with 3 cells" do
+        let(:cells) do
+          [[1, 2],
+                  [2, 3], [3, 3]]
+        end
+
+        it { should eq ([
+                  [2, 2],
+                  [2, 3],
+        ]) }
+      end
     end
 
     describe "#neighbour_count(pos)" do
@@ -151,6 +163,7 @@ describe "GameOfLife" do
   end
 
   class Generation
+
     def initialize(alive_cells)
       @cells = alive_cells
     end
