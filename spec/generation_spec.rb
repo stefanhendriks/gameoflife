@@ -112,4 +112,3 @@ end
 #context "dead cell that does not revive is not in the next generation" do
 #
 #end
-
