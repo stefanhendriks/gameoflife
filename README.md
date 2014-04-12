@@ -13,4 +13,6 @@ A not-alive cell:
 
 That's it.
 
-
+This implementation
+===================
+This code is purely for learning purposes, finding ways to solve the puzzle.
